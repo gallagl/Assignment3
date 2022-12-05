@@ -300,7 +300,7 @@ int getAdjUnvisitedVertex(int vertexIndex)
     return INVALID_NDX;
 }// getAdjUnvisitedVertex()
 
-void breadthFirstSearch (int start)
+int breadthFirstSearch (int start)
 // Do breadth-first search of global graph
 {
     int		i;
@@ -309,9 +309,6 @@ void breadthFirstSearch (int start)
 
     //mark first node as visited
     Vertices[start]->visited = GREY;
-
-    //display vertex
-    displayVertex (start);
 
     //insert vertex index in queue
     insert (ToVisit, start);
@@ -324,59 +321,61 @@ void breadthFirstSearch (int start)
         //no adjacent vertex found
         while((unvisitedVertex = getAdjUnvisitedVertex(tempVertex)) != -1) {
             Vertices[unvisitedVertex]->visited = GREY;
-            displayVertex(unvisitedVertex);
             insert(ToVisit, unvisitedVertex);
         }
     }
 
-    putchar ('\n');
-    printf ("List of vertices that were not visited\n");
-    for (i=0; i<vertexCount; i++)
-        if (Vertices[i]->visited == GREEN)	displayVertex (i);
-    putchar ('\n');
+    int count =0;
+    for (i=0; i<vertexCount; i++) {
+        if (Vertices[i]->visited == GREEN) {
+            count++;
+        }
+    }
 
     //queue is empty, search is complete, reset all visited flag
     resetVisitFlags ();
     destroy_queue (&ToVisit);
+    return count;
 }//BreadthFirstSearch()
-
 // bfs at every node
 // output number of nodes not reached
 // if number of nodes not reached = 0 then it is a parent
 
-int Mothvex(int start){
-    int v = 0;
-    for (int i = 0; i < V; i++) {
-        if (visited[i] == false) {
-            DFSUtil(i, visited);
-            v = i;
+int Mothvex(){
+    int v;
+    int checker = 0;
+    for (v=0; v<MAXVERTEX; v++)	{
+        int n = breadthFirstSearch(v);
+        if (n == 0){
+            checker = 1;
+            printf("%d",v);
         }
     }
+    return(-1);
 }
 
 int main (void) {
-    int v;
-
-    verbose = 0;            // Set to be talkative/not talkative during build
+    int		v;
 
     resetGraph();
-    addVertexLabels("0123456");
+    addVertexLabels ("ABCDEFG");
 
-    addEdgeByLabel('0', '1');
-    addEdgeByLabel('1', '3');
-    addEdgeByLabel('1', '4');
-    addEdgeByLabel('0', '2');
-    addEdgeByLabel('2', '5');
-    addEdgeByLabel('5', '6');
-    addEdgeByLabel('6', '4');
-    addEdgeByLabel('6', '0');
+    addDirectedEdge (0, 1);		// A - B
+    addDirectedEdge (0, 2);
+    addDirectedEdge (1, 3);
+    addDirectedEdge (6, 0);		// B - D
+    addDirectedEdge (6, 4);		// C - G
+    addDirectedEdge (4, 1);		// D - E
+    addDirectedEdge (5, 2);		// D - F
+    addDirectedEdge (5, 6);		// F - G
+    //addDirectedEdge (5, 4);		// F - E
 
-    verbose = 1;            // now be talkative
 
-    if (verbose) {
-        // Display resulting adjacency matrix
-        printf("Adjacency Matrix:\n");
-        printAdjMatrix();
-        putchar('\n');
-    }
+    printAdjMatrix();
+
+    printf("\nMother Vertex:\n");
+    Mothvex();
+
+    return 0;
+
 }
